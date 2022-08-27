@@ -2,7 +2,7 @@ import torch
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-# calculate Renyi divergence between two multivariate Gaussians
+# Calculate Renyi divergence between two multivariate Gaussians
 # mu is mean of 1st distribution, mean of 2nd distribution is 0
 # var is variance of 1st distribution, gamma is variance of 2nd distribution
 def renyi_divergence(mu, var, alpha=5, gamma=1):
