@@ -159,7 +159,7 @@ def main():
                     # Baseline loss
                     elif method == 3:
                         loss = torch.nn.functional.binary_cross_entropy(yhat.view(-1), y, reduction='sum')
-                    # Private loss
+                    # RFPIB loss
                     elif method == 4:
                         loss, divergence_loss, IB_loss, skoglund_loss, reconstruction_loss = cost_functions.get_RFPIB_loss(yhat, yhat_fair, y, mu, logvar, alpha, beta1, beta2, beta3, reconstruction, x)
 

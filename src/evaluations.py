@@ -94,7 +94,7 @@ def evaluate(model, dataloader, method, debugging, device, alpha, beta1, beta2, 
     testloss = 0
 
     y_list = []
-    a_list = []
+    s_list = []
     p_list = []
     yhat_list = []
     yhat_fair_list = []
@@ -113,7 +113,7 @@ def evaluate(model, dataloader, method, debugging, device, alpha, beta1, beta2, 
                 yhat_fair_list.append(yhat_fair)
 
             y_list.append(y)
-            a_list.append(s)
+            s_list.append(s)
             p_list.append(p)
             yhat_list.append(yhat)
 
@@ -144,7 +144,7 @@ def evaluate(model, dataloader, method, debugging, device, alpha, beta1, beta2, 
         if predictions:
 
             Y_test = torch.cat(y_list, dim=0)
-            A_test = torch.cat(a_list, dim=0)
+            A_test = torch.cat(s_list, dim=0)
             Yhat_test = torch.cat(yhat_list, dim=0)
 
             y = Y_test.cpu().detach().numpy()
