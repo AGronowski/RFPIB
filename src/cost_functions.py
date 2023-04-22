@@ -5,7 +5,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # Calculate Renyi divergence between two multivariate Gaussians
 # mu is mean of 1st distribution, mean of 2nd distribution is 0
 # var is variance of 1st distribution, gamma is variance of 2nd distribution
-def renyi_divergence(mu, var, alpha=5, gamma=1):
+def renyi_divergence(mu, var, alpha, gamma=1):
     sigma_star = alpha * gamma + (1 - alpha) * var
     term1 = alpha / 2 * mu ** 2 / sigma_star
 
@@ -17,6 +17,16 @@ def renyi_divergence(mu, var, alpha=5, gamma=1):
 
     return torch.sum(total)
 
+def renyi_crossentropy(mu, var, alpha, gamma=1):
+    # var is sigma squared
+    inside_log = (gamma + var * (alpha -1)) / gamma
+    term1 = -torch.log(inside_log)
+    term2 = -mu ** 2 / var
+    term3 = mu **2 / var **2 * var * gamma / (gamma + var * (alpha-1))
+
+    total = term1 + term2 + term3
+
+    return torch.sum(total)
 
 # IB or CFB loss
 def get_KLdivergence_loss(yhat, y, mu, logvar, beta):
@@ -36,7 +46,9 @@ def get_RFIB_loss(yhat, yhat_fair, y, mu, logvar, alpha, beta1, beta2):
         divergence = 0
     elif alpha == 1:  # KL Divergence
         divergence = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-    else:
+    elif alpha < 1: # Renyi cross entropy
+        divergence = renyi_crossentropy(mu, logvar, alpha)
+    else: # Renyi divergence
         divergence = renyi_divergence(mu, logvar, alpha)
 
     IB_cross_entropy = torch.nn.functional.binary_cross_entropy_with_logits(yhat.view(-1), y,
