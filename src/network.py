@@ -84,9 +84,16 @@ class ResnetEncoder(nn.Module):
         rep = torch.flatten(x,1)
         mu = self.fc1(rep)
 
-        # sigmoid added to keep variance between 0 and 1 to allow for alpha > 1
         var = self.fc2(rep)
-        var = torch.sigmoid(var)
+
+        # sigmoid added to keep variance between 0 and 1 to allow for alpha > 1
+        # for renyi divergence
+        # var = torch.sigmoid(var)
+
+        # for renyi cross entropy we want the variance to be > 1
+        var = torch.clamp(var, min=1)
+
+
         z = self.reparameterize_highalpha(mu,var)
         return z, mu, var
 
